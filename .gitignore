@@ -1,0 +1,7 @@
+/volumes/cache/*
+/volumes/cahe/*
+/volumes/elasticsearch/*
+/volumes/mongodb/*
+/volumes/mysql/*
+/volumes/postgres/*
+/volumes/rabbitmq/*
