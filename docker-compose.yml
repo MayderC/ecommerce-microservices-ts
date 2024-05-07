@@ -26,13 +26,12 @@ services:
   
   mysql:
     container_name: mysql_ec
-    image: mysql:latest
+    image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_DATABASE: ec_auth
       MYSQL_ROOT_PASSWORD: example
-      MYSQL_PASSWORD: example
     ports:
       - "3306:3306"
     volumes:
@@ -75,10 +74,16 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       bootstrap.memory_lock: "true"
       discovery.type: "single-node"
+      network.host: 0.0.0.0
+      transport.host: 127.0.0.1
+      http.host: 0.0.0.0
       xpack.security.enabled: "true"
       xpack.security.authc.api_key.enabled: "true"
       xpack.monitoring.collection.enabled: "true"
       xpack.security.enrollment.enabled: "true"
+      xpack.security.authc.token.enabled: "true"
+      ELASTIC_PASSWORD: "admin123"
+    #command: "curl -XPOST -u elastic:admin123 -H 'Content-Type: application/json' http://localhost:9200/_security/user/kibana_system/_password -d  '{ `password`: `admin123` }'"
     volumes:
       - ./volumes/elasticsearch:/usr/share/elasticsearch/data
     networks:
@@ -91,7 +96,12 @@ services:
     ports:
       - "5601:5601"
     environment:
-      ELASTICSEARCH_HOSTS: "http://elasticsearch_ec:9200"
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch_ec:9200"]'
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "admin123"
+      #this is the token for the service account and only for development purposes
+      ELASTICSEARCH_SERVICEACCOUNT_TOKEN: "AAEAAWVsYXN0aWMva2liYW5hL2pvYmJlci1raWJhbmE6N3hVUnRpbDJSemlrNjVXZm9Jb3BuQQ"
+      XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS: '["http://elasticsearch_ec:9200"]'
     networks:
       - elastic
     volumes:
